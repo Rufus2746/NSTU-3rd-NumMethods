@@ -3,86 +3,59 @@
 #include <fstream>
 #include <cstdio>
 
-#include <cstdlib>                                  //Delete at the end
-#include <ctime>                                    //Delete at the end
-
 
 using namespace std;
+int dimension, notNullElements;
 
-void read_dimensions(int *n, int *m)
-{
-    ifstream dimension("dimention.txt");
-    dimension >> *n;
-    dimension >> *m;
-    dimension.close();
+void read_dimensions(int *dimension){
+    ifstream dimensionFile("dimension.txt");
+    dimensionFile >> *dimension;
+    dimensionFile.close();
+
+    ifstream iaFile("ia.txt");
+    
 }
 
-void create_random_matryx(int n, int m){            //Delete at the end
-    ofstream alFile("al.txt");                      //A nahui ya eto delal
-    int x;
-    for (int i = 0; i < n; i++)
-    {
-        for (int j = 0; j < m; j++)
-        {
-            srand(time(0)*rand());
-            x = -10 + rand() % 20;
-            alFile << x << "   ";
-        }
-        alFile << endl;
-    }    
-    alFile.close();
-}
-
-void read_matrices(int n, int m, double **al, double *d, double **au, double *vec_b, double **L, double **U){
-    ifstream alFile("al.txt");
-    for (int i = 0; i < n; i++)
-    {
-        al[i] = new double[m];
-        for (int j = 0; j < m; j++)
-        {
-            alFile >> al[i][j];
-        }
-    }
-    alFile.close();
-
-    ifstream auFile("au.txt");
-    for (int i = 0; i < n; i++)
-    {
-        au[i] = new double[m];
-        for (int j = 0; j < m; j++)
-        {
-            auFile >> au[i][j];
-        }
-    }
-    auFile.close();
-
-    ifstream vecFile("vec.txt");
-    for (int i = 0; i < n; i++)
-        vecFile >> vec_b[i];
-    vecFile.close();
-
-    for (int i = 0; i < n; i++)
-    {
-        L[i] = new double[n];
-        U[i] = new double[n];
-        for (int j = 0; j < n; j++)
-        {
-            L[i][j] = 0.0;
-            U[i][j] = 0.0;
-        }
+void read_data(string fileName, float *element){
+    ifstream file(fileName);
+    for(int i; i<dimension; i++){
+        file >> *element;
     }
 }
 
-int main()
-{
-    int n, m;
-    read_dimensions(&n, &m);
+int main(){
+    int alIndex, auIndex, iaIndex, diagnalIndex, fIndex, xIndex, yIndex;
 
-    double **al = new double *[n];
-    double *d = new double[n];
-    double **au = new double *[n];
-    double *vec_b = new double[n];
-    double **L = new double *[n];
-    double **U = new double *[n];
+    read_dimensions(&dimension);
+
+    float **memory = new float*[1000000];
+    iaIndex = 0;
+    alIndex = iaIndex + (dimension+1);
+    auIndex = alIndex + (notNullElements);
+    diagnalIndex = auIndex + (notNullElements);
+    fIndex = diagnalIndex + (dimension);
+    yIndex = fIndex;
+    xIndex = fIndex;
+    string fileNames[] = {"ia.txt", "al.txt", "au.txt", "diagnal.txt", "f.txt"};
+
+    for(int i=0; i<sizeof(fileNames); i++){
+        read_data(fileNames[i], memory[i]);
+    };
+/*
+    float **al = new float *[n];
+    float *d = new float[n];
+    float **au = new float *[n];
+    float *vec_b = new float[n];
+    float **L = new float *[n];
+    float **U = new float *[n];
     read_matrices(n, m, al, d, au, vec_b, L, U);
+*/
 }
+
+enum{
+    iaIndex = 0,
+    alIndex = 1,
+    auIndex = 2,
+    diagnalIndex = 3,
+    fIndex = 4
+};
