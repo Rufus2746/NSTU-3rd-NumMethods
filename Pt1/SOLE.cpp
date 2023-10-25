@@ -64,30 +64,30 @@ float getA(int i, int j){
 }
 
 void LUdecomposition(){                                                                 //Doesn't work after changes. Need to fix ranges
-    float buffer;
+    float buffer, oldElement;
     int li = 0, ui = 0;
     for(int l=0; l<dimension; l++){
         buffer = 0;
-        for(int j=0; j<dimension; j++){
-            if(getA(l,j)!=0){
-                for(int k=0; k<l-1; k++){
+        for(int j=l; j<dimension; j++){
+            oldElement = getA(l,j);
+            if(oldElement!=0){
+                for(int k=0; k<l-1 && k!=l; k++){
                     buffer = buffer +getA(l,k)*getA(k,j);
                 }
                 if(l==j){
-                    memory[diagnal+j] = getA(l,j) - buffer;
-                }else{memory[au+ui] = getA(l,j) - buffer;ui++;}
+                    memory[diagnal+l] = oldElement - buffer;
+                }else{memory[au+ui] = oldElement - buffer;ui++;}
             }
         }
 
         buffer = 0;
-        for(int i=1; i!=l && i<dimension; i++){
-            if(getA(i,l)!=0){
-                for(int k=0; k<l-1; k++){
+        for(int i=l+1; i<dimension; i++){
+            oldElement = getA(i,l);
+            if(oldElement!=0){
+                for(int k=0; k<l-1 && k!=l; k++){
                     buffer = buffer + getA(i,k)*getA(k,l);
                 }
-                if(l==i){
-                    memory[diagnal+i] = (getA(i,l) - buffer) / getA(l,i);
-                }else{memory[al+li] = (getA(i,l) - buffer) / getA(l,i);li++;}
+                memory[al+li] = (oldElement - buffer) / getA(i,i);li++;
             }
         }
     }
