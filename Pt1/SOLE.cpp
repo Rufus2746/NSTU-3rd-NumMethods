@@ -87,7 +87,7 @@ void LUdecomposition(){                                                         
                 for(int k=0; k<l-1 && k!=l; k++){
                     buffer = buffer + getA(i,k)*getA(k,l);
                 }
-                memory[al+li] = (oldElement - buffer) / getA(i,i);li++;
+                memory[al+li] = (oldElement - buffer) / getA(l,l);li++;
             }
         }
     }
