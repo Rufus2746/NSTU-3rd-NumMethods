@@ -65,31 +65,53 @@ float getA(int i, int j){
 
 void LUdecomposition(){                                                                 //Doesn't work after changes. Need to fix ranges
     float buffer, oldElement;
-    int li = 0, ui = 0;
-    for(int l=0; l<dimension; l++){
+    int Li = 0, Ui = 0;
+    for(int h=0; h<dimension; h++){
         buffer = 0;
-        for(int j=l; j<dimension; j++){
-            oldElement = getA(l,j);
+        for(int j=h; j<dimension; j++){
+            oldElement = getA(h,j);
             if(oldElement!=0){
-                for(int k=0; k<l-1 && k!=l; k++){
-                    buffer = buffer +getA(l,k)*getA(k,j);
+                for(int k=0; k<h-1 && k!=h; k++){
+                    buffer = buffer +getA(h,k)*getA(k,j);
                 }
-                if(l==j){
-                    memory[diagnal+l] = oldElement - buffer;
-                }else{memory[au+ui] = oldElement - buffer;ui++;}
+                if(h==j){
+                    memory[diagnal+h] = oldElement - buffer;
+                }else{memory[au+Ui] = oldElement - buffer;Ui++;}
             }
         }
 
         buffer = 0;
-        for(int i=l+1; i<dimension; i++){
-            oldElement = getA(i,l);
+        for(int i=h+1; i<dimension; i++){
+            oldElement = getA(i,h);
             if(oldElement!=0){
-                for(int k=0; k<l-1 && k!=l; k++){
-                    buffer = buffer + getA(i,k)*getA(k,l);
+                for(int k=0; k<h-1 && k!=h; k++){
+                    buffer = buffer + getA(i,k)*getA(k,h);
                 }
-                memory[al+li] = (oldElement - buffer) / getA(l,l);li++;
+                memory[al+Li] = (oldElement - buffer) / getA(h,h);Li++;
             }
         }
+    }
+}
+
+void calculateY(int f, int y){
+    float buffer;
+    for(int i=0; i<dimension; i++){
+        buffer = 0;
+        for(int k=0; k<i-1; k++){
+            buffer = buffer + getA(i, k)*memory[f+k];
+        }
+        memory[y+i] = memory[f+i] - buffer;
+    }
+}
+
+void calculateX(int y, int x){
+    float buffer;
+    for(int i=0; i<dimension; i++){
+        buffer = 0;
+        for(int k=0; k<dimension; k++){
+            buffer = buffer + getA(i,k)*memory[x+k];
+        }
+        memory[y+i] = (memory[x+i] - buffer)/getA(i,i);
     }
 }
 
