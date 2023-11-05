@@ -69,11 +69,14 @@ void LUdecomposition() {                                                        
    float buffer, oldElement, L = 0, U = 0;
    int Li = 0, Ui = 0;
    for (int h = 0; h < dimension; h++) {
-      buffer = 0;
       for (int j = h; j < dimension; j++) {
+         if (h==2){
+            cout << ' ';
+         }
          oldElement = getA(h, j);
          if (oldElement != 0) {
-            for (int k = 0; k < h - 1 && k != h; k++) {
+            buffer = 0;
+            for (int k = 0; k <= h - 1 ; k++) {
                if (h != k) {
                   L = getA(h, k);
                }
@@ -88,11 +91,12 @@ void LUdecomposition() {                                                        
          }
       }
 
-      buffer = 0;
+
       for (int i = h + 1; i < dimension; i++) {
          oldElement = getA(i, h);
          if (oldElement != 0) {
-            for (int k = 0; k < h - 1 && k != h; k++) {
+            buffer = 0;
+            for (int k = 0; k <= h - 1 && k != h; k++) {
                if (i != k) {
                   L = getA(i, k);
                }
@@ -110,7 +114,7 @@ void calculateY(int f, int y) {
    float buffer;
    for (int i = 0; i < dimension; i++) {
       buffer = 0;
-      for (int k = 0; k < i - 1; k++) {
+      for (int k = 0; k <= i - 1; k++) {
          buffer = buffer + getA(i, k) * memory[f + k];
       }
       memory[y + i] = memory[f + i] - buffer;
@@ -121,10 +125,10 @@ void calculateX(int y, int x) {
    float buffer;
    for (int i = 0; i < dimension; i++) {
       buffer = 0;
-      for (int k = 0; k < dimension; k++) {
+      for (int k = 0; k <= dimension; k++) {
          buffer = buffer + getA(i, k) * memory[x + k];
       }
-      memory[y + i] = (memory[x + i] - buffer) / getA(i, i);
+      memory[x + i] = (memory[y + i] - buffer) / memory[diagnal+i];
    }
 }
 
@@ -160,5 +164,13 @@ int main() {
          cout << getA(i, j) << "\t";
       }
       cout << '\n';
+   }
+
+   calculateY(f, y);
+   calculateX(y, x);
+
+   cout << "\n\n\nNew vector:\n";
+   for(int i=0; i<dimension; i++){
+      cout << memory[x+i] << '\n';
    }
 }
