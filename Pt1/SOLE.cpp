@@ -4,7 +4,7 @@
 
 using namespace std;
 int notNullElements, dimension, diagnal, ia, al, au;
-float memory[100000];
+double memory[100000];
 
 void read_dimensions(int* dimension) {
    ifstream dimensionFile("dimension.txt");
@@ -35,8 +35,8 @@ void read_data(string fileName, int index) {
    }
 }
 
-float getA(int i, int j) {
-   float element = 0;
+double getA(int i, int j) {
+   double element = 0;
    int count = 0;
    int index = 0;
 
@@ -67,7 +67,7 @@ float getA(int i, int j) {
 }
 
 void LUdecomposition() {                                                                 //Doesn't work after changes. Need to fix ranges
-   float buffer, oldElement, L = 0, U = 0;
+   double buffer, oldElement, L = 0, U = 0;
    int Li = 0, Ui = 0;
    for (int h = 0; h < dimension; h++) {
       for (int j = h; j < dimension; j++) {
@@ -112,7 +112,7 @@ void LUdecomposition() {                                                        
 }
 
 void calculateY(int f, int y) {
-   float buffer;
+   double buffer;
    for (int i = 0; i < dimension; i++) {
       buffer = 0;
       for (int k = 0; k <= i - 1; k++) {
@@ -123,10 +123,10 @@ void calculateY(int f, int y) {
 }
 
 void calculateX(int y, int x) {
-   float buffer;
+   double buffer;
    for (int i = dimension - 1; i != -1; i--) {
       buffer = 0;
-      for (int k = 0; k < dimension-i-1; k++) {
+      for (int k = i+1; i<=dimension-2 && k>i; k--) {
          buffer = buffer + getA(i, k) * memory[x + k];
       }
       memory[x + i] = (memory[y + i] - buffer) / memory[diagnal + i];
