@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <iomanip> //need to be deleted at the end of programming process
 
 using namespace std;
 int notNullElements, dimension, diagnal, ia, al, au;
@@ -70,19 +71,19 @@ void LUdecomposition() {                                                        
    int Li = 0, Ui = 0;
    for (int h = 0; h < dimension; h++) {
       for (int j = h; j < dimension; j++) {
-         if (h==2){
+         if (h == 2) {
             cout << ' ';
          }
          oldElement = getA(h, j);
          if (oldElement != 0) {
             buffer = 0;
-            for (int k = 0; k <= h - 1 ; k++) {
+            for (int k = 0; k <= h - 1; k++) {
                if (h != k) {
                   L = getA(h, k);
                }
-               else {L = 1;}
+               else { L = 1; }
                U = getA(k, j);
-               buffer = buffer + L*U;
+               buffer = buffer + L * U;
             }
             if (h == j) {
                memory[diagnal + h] = oldElement - buffer;
@@ -100,9 +101,9 @@ void LUdecomposition() {                                                        
                if (i != k) {
                   L = getA(i, k);
                }
-               else {L = 1;}
+               else { L = 1; }
                U = getA(k, h);
-               buffer = buffer + L*U;
+               buffer = buffer + L * U;
             }
             memory[al + Li] = (oldElement - buffer) / getA(h, h); Li++;
          }
@@ -123,12 +124,12 @@ void calculateY(int f, int y) {
 
 void calculateX(int y, int x) {
    float buffer;
-   for (int i = 0; i < dimension; i++) {
+   for (int i = dimension - 1; i != -1; i--) {
       buffer = 0;
-      for (int k = 0; k <= dimension; k++) {
+      for (int k = 0; k < dimension-i-1; k++) {
          buffer = buffer + getA(i, k) * memory[x + k];
       }
-      memory[x + i] = (memory[y + i] - buffer) / memory[diagnal+i];
+      memory[x + i] = (memory[y + i] - buffer) / memory[diagnal + i];
    }
 }
 
@@ -159,18 +160,43 @@ int main() {
    cout << "\n3 thousand years later\n\n";
    LUdecomposition();
 
+   cout << "\n\nL matrix be like:\n";
+   for (int i = 0; i < dimension; i++) {
+      for (int j = 0; j <= i; j++) {
+         if (i == j) {
+            cout << '\t' << setw(5) << setfill(' ') << '1';
+            for (int k = 0; k < dimension - i-1; k++) { cout << '\t' << setw(5) << setfill(' ') << '0'; }
+         }else {
+            cout << '\t' << setw(5) << getA(i, j) << setprecision(3) << setfill(' ');
+         }
+      }
+      cout << "\n" ;
+   }
+
+   cout << "\n\nU matrix be like\n";
    for (int i = 0; i < dimension; i++) {
       for (int j = 0; j < dimension; j++) {
-         cout << getA(i, j) << "\t";
+         if (j < i) {
+            cout << '\t' << setw(5) << setfill(' ') << '0';
+         }
+         else {
+            cout << '\t' << setw(5)<< getA(i, j) << setprecision(3) << setfill(' ');
+         }
       }
-      cout << '\n';
+      cout << "\n";
    }
 
    calculateY(f, y);
+
+   cout << "\n\n\nY be like:\n";
+   for (int i = 0; i < dimension; i++) {
+      cout << memory[y + i] << '\n';
+   }
+
    calculateX(y, x);
 
-   cout << "\n\n\nNew vector:\n";
-   for(int i=0; i<dimension; i++){
-      cout << memory[x+i] << '\n';
+   cout << "\n\n\nX be like:\n";
+   for (int i = 0; i < dimension; i++) {
+      cout << memory[x + i] << '\n';
    }
 }
