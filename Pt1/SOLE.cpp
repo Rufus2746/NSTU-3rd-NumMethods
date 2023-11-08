@@ -4,7 +4,7 @@
 
 using namespace std;
 int notNullElements, dimension, diagnal, ia, al, au;
-double memory[100000];
+float memory[100000];
 
 void read_dimensions(int* dimension) {
    ifstream dimensionFile("dimension.txt");
@@ -25,7 +25,7 @@ void read_dimensions(int* dimension) {
 void read_data(string fileName, int index) {
    ifstream file(fileName);
    if (file.is_open()) {
-      for (int i = 0; i < dimension; i++) {
+      for (int i = 0; i < notNullElements; i++) {
          file >> memory[index + i];
       }
       file.close();
@@ -35,8 +35,8 @@ void read_data(string fileName, int index) {
    }
 }
 
-double getA(int i, int j) {
-   double element = 0;
+float getA(int i, int j) {
+   float element = 0;
    int count = 0;
    int index = 0;
 
@@ -67,7 +67,7 @@ double getA(int i, int j) {
 }
 
 void LUdecomposition() {                                                                 //Doesn't work after changes. Need to fix ranges
-   double buffer, oldElement, L = 0, U = 0;
+   float buffer, oldElement, L = 0, U = 0;
    int Li = 0, Ui = 0;
    for (int h = 0; h < dimension; h++) {
       for (int j = h; j < dimension; j++) {
@@ -112,7 +112,7 @@ void LUdecomposition() {                                                        
 }
 
 void calculateY(int f, int y) {
-   double buffer;
+   float buffer;
    for (int i = 0; i < dimension; i++) {
       buffer = 0;
       for (int k = 0; k <= i - 1; k++) {
@@ -123,7 +123,7 @@ void calculateY(int f, int y) {
 }
 
 void calculateX(int y, int x) {
-   double buffer;
+   float buffer;
    for (int i = dimension - 1; i != -1; i--) {
       buffer = 0;
       for (int k = i+1; i<=dimension-2 && k>i; k--) {
@@ -152,7 +152,7 @@ int main() {
 
    for (int i = 0; i < dimension; i++) {
       for (int j = 0; j < dimension; j++) {
-         cout << getA(i, j);
+         cout <<'\t'<< getA(i, j)<< setfill(' ');
       }
       cout << '\n';
    }
@@ -164,10 +164,10 @@ int main() {
    for (int i = 0; i < dimension; i++) {
       for (int j = 0; j <= i; j++) {
          if (i == j) {
-            cout << '\t' << setw(5) << setfill(' ') << '1';
-            for (int k = 0; k < dimension - i-1; k++) { cout << '\t' << setw(5) << setfill(' ') << '0'; }
+            cout << '\t' << setw(10) << setfill(' ') << '1';
+            for (int k = 0; k < dimension - i-1; k++) { cout << '\t' << setw(10) << setfill(' ') << '0'; }
          }else {
-            cout << '\t' << setw(5) << getA(i, j) << setprecision(3) << setfill(' ');
+            cout << '\t' << setw(10) << getA(i, j) << setfill(' ');
          }
       }
       cout << "\n" ;
@@ -177,10 +177,10 @@ int main() {
    for (int i = 0; i < dimension; i++) {
       for (int j = 0; j < dimension; j++) {
          if (j < i) {
-            cout << '\t' << setw(5) << setfill(' ') << '0';
+            cout << '\t' << setw(10) << setfill(' ') << '0';
          }
          else {
-            cout << '\t' << setw(5)<< getA(i, j) << setprecision(3) << setfill(' ');
+            cout << '\t'<< setw(10) << getA(i, j) << setfill(' ');
          }
       }
       cout << "\n";
