@@ -3,7 +3,7 @@
 #include <iomanip> //need to be deleted at the end of programming process
 
 using namespace std;
-int notNullElements, dimension, diagnal, ia, al, au;
+int notNullElements, dimension, diagnal, ia, al, au, Ui, Li;
 float memory[100000];
 
 void read_dimensions(int* dimension) {
@@ -45,12 +45,12 @@ float getA(int i, int j) {
    if (i > j) {                                                                                //Lower triangle
       count = static_cast<int>(memory[ia + i + 1]) - static_cast<int>(memory[ia + i]);
       index = static_cast<int>(memory[ia + i + 1]) - 1;
-      if (j >= i - count) {                                                                     //check if element is 0
+      if (j >= i - count) {     
          for (int k = 0; i > j - 1; k++) {
             element = memory[al + index - k];
             i--;
          }
-      }
+      }                                                                                        //check if element is 0
    }
    else {                                                                                  //Upper triangle
       count = static_cast<int>(memory[ia + j + 1] - static_cast<int>(memory[ia + j]));
@@ -66,48 +66,86 @@ float getA(int i, int j) {
    return element;
 }
 
-void LUdecomposition() {                                                                 //Doesn't work after changes. Need to fix ranges
-   float buffer, oldElement, L = 0, U = 0;
-   int Li = 0, Ui = 0;
+bool isItAu(int i, int j){
+   for(int m=0; m<i; m++){
+      if(getA(m,j)!= 0){return true;}
+   }
+   return false;
+}
+
+bool isItAl(int i, int j){
+   for(int m=0; m<j; m++){
+      if(getA(m, j) != 0){return true;}
+   }
+   return false;
+}
+
+void calculateU(int i, int j, float oldElement){
+   float buffer = 0, L = 0, U = 0;
+   int count = static_cast<int>(memory[ia + j + 1]) - static_cast<int>(memory[ia + j]);
+   int index = static_cast<int>(memory[ia + j + 1]) - 1;
+
+   for (int k = 0; k <= i - 1; k++) {
+      if (i != k) {
+         L = getA(i, k);
+         }
+         else { L = 1; }
+
+         U = getA(k, j);
+         buffer = buffer + L * U;
+      }
+
+   if (i == j) {memory[diagnal + i] = oldElement - buffer;}
+   else {
+      buffer = oldElement - buffer; 
+      memory[au + index - count+i-(j-count)] = buffer;
+   }
+}
+
+void calculateL(int i, int j, float oldElement){
+   float buffer = 0, L = 0, U = 0;
+   int count = static_cast<int>(memory[ia + i + 1] - static_cast<int>(memory[ia + i]));
+   int index = static_cast<int>(memory[ia + i + 1]) - 1;
+
+   for (int k = 0; k <= j - 1 && k != j; k++) {
+      if (i != k) {L = getA(i, k);}
+      else { L = 1; }
+
+      U = getA(k, j);
+      buffer = buffer + L * U;
+      }
+      buffer = (oldElement - buffer) / getA(j, j);
+      memory[al + index - count + j-(i-count)] = buffer;
+}
+
+void LUdecomposition() {
+   float oldElement = 0;
    for (int h = 0; h < dimension; h++) {
       for (int j = h; j < dimension; j++) {
-         if (h == 2) {
+
+         if(j == 6){
             cout << ' ';
          }
          oldElement = getA(h, j);
-         if (oldElement != 0) {
-            buffer = 0;
-            for (int k = 0; k <= h - 1; k++) {
-               if (h != k) {
-                  L = getA(h, k);
-               }
-               else { L = 1; }
-               U = getA(k, j);
-               buffer = buffer + L * U;
+         if(oldElement == 0){
+            if(isItAu(h,j)){
+               calculateU(h,j, oldElement);
             }
-            if (h == j) {
-               memory[diagnal + h] = oldElement - buffer;
-            }
-            else { memory[au + Ui] = oldElement - buffer; Ui++; }
-         }
+         }else{calculateU(h,j, oldElement);}
       }
-
-
+   
+   cout<< "\n\nIteration #"<< h << '\n';
       for (int i = h + 1; i < dimension; i++) {
          oldElement = getA(i, h);
-         if (oldElement != 0) {
-            buffer = 0;
-            for (int k = 0; k <= h - 1 && k != h; k++) {
-               if (i != k) {
-                  L = getA(i, k);
-               }
-               else { L = 1; }
-               U = getA(k, h);
-               buffer = buffer + L * U;
+         if(oldElement == 0){
+            if(isItAl(i,h)){
+               calculateL(i,h, oldElement);
             }
-            memory[al + Li] = (oldElement - buffer) / getA(h, h); Li++;
-         }
+         }else{calculateL(i,h, oldElement);}
       }
+         for(int p=0; p<notNullElements; p++){
+            cout << getA(7, p) << '\n';
+         } 
    }
 }
 
@@ -124,9 +162,9 @@ void calculateY(int f, int y) {
 
 void calculateX(int y, int x) {
    float buffer;
-   for (int i = dimension - 1; i != -1; i--) {
+   for (int i = 0; i < dimension; i++) {
       buffer = 0;
-      for (int k = i+1; i<=dimension-2 && k>i; k--) {
+      for (int k = 0; i>=1 && k<i; k++) {
          buffer = buffer + getA(i, k) * memory[x + k];
       }
       memory[x + i] = (memory[y + i] - buffer) / memory[diagnal + i];
@@ -164,10 +202,10 @@ int main() {
    for (int i = 0; i < dimension; i++) {
       for (int j = 0; j <= i; j++) {
          if (i == j) {
-            cout << '\t' << setw(10) << setfill(' ') << '1';
-            for (int k = 0; k < dimension - i-1; k++) { cout << '\t' << setw(10) << setfill(' ') << '0'; }
+            cout << setw(13) << setfill(' ') << '1';
+            for (int k = 0; k < dimension - i-1; k++) { cout << setw(13) << setfill(' ') << '0'; }
          }else {
-            cout << '\t' << setw(10) << getA(i, j) << setfill(' ');
+            cout << setw(13) << getA(i, j) << setfill(' ');
          }
       }
       cout << "\n" ;
@@ -177,10 +215,10 @@ int main() {
    for (int i = 0; i < dimension; i++) {
       for (int j = 0; j < dimension; j++) {
          if (j < i) {
-            cout << '\t' << setw(10) << setfill(' ') << '0';
+            cout << setw(13) << setfill(' ') << '0';
          }
          else {
-            cout << '\t'<< setw(10) << getA(i, j) << setfill(' ');
+            cout<< setw(13) << getA(i, j) << setfill(' ');
          }
       }
       cout << "\n";
