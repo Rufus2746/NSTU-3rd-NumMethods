@@ -98,11 +98,15 @@ void calculateU(int i, int j, float oldElement){
    if (i == j) {memory[diagnal + i] = oldElement - buffer;}
    else {
       buffer = oldElement - buffer; 
-      memory[au + index - count+i-(j-count)] = buffer;
+      memory[au + index + i - j] = buffer;
    }
 }
 
 void calculateL(int i, int j, float oldElement){
+   if(i==7&&j==3){
+      cout<<' ';
+   }
+
    float buffer = 0, L = 0, U = 0;
    int count = static_cast<int>(memory[ia + i + 1] - static_cast<int>(memory[ia + i]));
    int index = static_cast<int>(memory[ia + i + 1]) - 1;
@@ -113,19 +117,17 @@ void calculateL(int i, int j, float oldElement){
 
       U = getA(k, j);
       buffer = buffer + L * U;
-      }
-      buffer = (oldElement - buffer) / getA(j, j);
-      memory[al + index - count + j-(i-count)] = buffer;
+   }
+   buffer = (oldElement - buffer) / getA(j, j);
+   memory[al + index + j - i] = buffer;
+
+   cout<<"\nIndex= "<<index<<"   and "<<index +j-i;
 }
 
 void LUdecomposition() {
    float oldElement = 0;
    for (int h = 0; h < dimension; h++) {
       for (int j = h; j < dimension; j++) {
-
-         if(j == 6){
-            cout << ' ';
-         }
          oldElement = getA(h, j);
          if(oldElement == 0){
             if(isItAu(h,j)){
@@ -143,9 +145,6 @@ void LUdecomposition() {
             }
          }else{calculateL(i,h, oldElement);}
       }
-         for(int p=0; p<notNullElements; p++){
-            cout << getA(7, p) << '\n';
-         } 
    }
 }
 
