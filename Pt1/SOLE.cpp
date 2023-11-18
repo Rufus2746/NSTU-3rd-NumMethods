@@ -45,7 +45,7 @@ float getA(int i, int j) {
    if (i > j) {                                                                                //Lower triangle
       count = static_cast<int>(memory[ia + i + 1]) - static_cast<int>(memory[ia + i]);
       index = static_cast<int>(memory[ia + i + 1]) - 1;
-      if (j >= i - count) {     
+      if (j >= i - count) {
          for (int k = 0; i > j - 1; k++) {
             element = memory[al + index - k];
             i--;
@@ -66,21 +66,21 @@ float getA(int i, int j) {
    return element;
 }
 
-bool isItAu(int i, int j){
-   for(int m=0; m<i; m++){
-      if(getA(m,j)!= 0){return true;}
+bool isItAu(int i, int j) {
+   for (int m = 0; m < i; m++) {
+      if (getA(m, j) != 0) { return true; }
    }
    return false;
 }
 
-bool isItAl(int i, int j){
-   for(int m=0; m<j; m++){
-      if(getA(m, j) != 0){return true;}
+bool isItAl(int i, int j) {
+   for (int m = 0; m < j; m++) {
+      if (getA(i, m) != 0) { return true; }
    }
    return false;
 }
 
-void calculateU(int i, int j, float oldElement){
+void calculateU(int i, int j, float oldElement) {
    float buffer = 0, L = 0, U = 0;
    int count = static_cast<int>(memory[ia + j + 1]) - static_cast<int>(memory[ia + j]);
    int index = static_cast<int>(memory[ia + j + 1]) - 1;
@@ -88,31 +88,27 @@ void calculateU(int i, int j, float oldElement){
    for (int k = 0; k <= i - 1; k++) {
       if (i != k) {
          L = getA(i, k);
-         }
-         else { L = 1; }
-
-         U = getA(k, j);
-         buffer = buffer + L * U;
       }
+      else { L = 1; }
 
-   if (i == j) {memory[diagnal + i] = oldElement - buffer;}
+      U = getA(k, j);
+      buffer = buffer + L * U;
+   }
+
+   if (i == j) { memory[diagnal + i] = oldElement - buffer; }
    else {
-      buffer = oldElement - buffer; 
+      buffer = oldElement - buffer;
       memory[au + index + i - j] = buffer;
    }
 }
 
-void calculateL(int i, int j, float oldElement){
-   if(i==7&&j==3){
-      cout<<' ';
-   }
-
+void calculateL(int i, int j, float oldElement) {
    float buffer = 0, L = 0, U = 0;
    int count = static_cast<int>(memory[ia + i + 1] - static_cast<int>(memory[ia + i]));
    int index = static_cast<int>(memory[ia + i + 1]) - 1;
 
    for (int k = 0; k <= j - 1 && k != j; k++) {
-      if (i != k) {L = getA(i, k);}
+      if (i != k) { L = getA(i, k); }
       else { L = 1; }
 
       U = getA(k, j);
@@ -120,8 +116,6 @@ void calculateL(int i, int j, float oldElement){
    }
    buffer = (oldElement - buffer) / getA(j, j);
    memory[al + index + j - i] = buffer;
-
-   cout<<"\nIndex= "<<index<<"   and "<<index +j-i;
 }
 
 void LUdecomposition() {
@@ -129,21 +123,22 @@ void LUdecomposition() {
    for (int h = 0; h < dimension; h++) {
       for (int j = h; j < dimension; j++) {
          oldElement = getA(h, j);
-         if(oldElement == 0){
-            if(isItAu(h,j)){
-               calculateU(h,j, oldElement);
+         if (oldElement == 0) {
+            if (isItAu(h, j)) {
+               calculateU(h, j, oldElement);
             }
-         }else{calculateU(h,j, oldElement);}
+         }
+         else { calculateU(h, j, oldElement); }
       }
-   
-   cout<< "\n\nIteration #"<< h << '\n';
+
       for (int i = h + 1; i < dimension; i++) {
          oldElement = getA(i, h);
-         if(oldElement == 0){
-            if(isItAl(i,h)){
-               calculateL(i,h, oldElement);
+         if (oldElement == 0) {
+            if (isItAl(i, h)) {
+               calculateL(i, h, oldElement);
             }
-         }else{calculateL(i,h, oldElement);}
+         }
+         else { calculateL(i, h, oldElement); }
       }
    }
 }
@@ -161,10 +156,10 @@ void calculateY(int f, int y) {
 
 void calculateX(int y, int x) {
    float buffer;
-   for (int i = 0; i < dimension; i++) {
+   for (int i = dimension-1; i != -1; i--) {
       buffer = 0;
-      for (int k = 0; i>=1 && k<i; k++) {
-         buffer = buffer + getA(i, k) * memory[x + k];
+      for (int k = dimension - 1; k > i; k--) {
+         buffer = buffer + getA(i, k) * memory[y + k];
       }
       memory[x + i] = (memory[y + i] - buffer) / memory[diagnal + i];
    }
@@ -179,7 +174,7 @@ int main() {
    au = al + notNullElements;
    diagnal = au + notNullElements;
    f = diagnal + dimension;
-   y = f;
+   y = f + dimension;
    x = f;
 
    read_data("al.txt", al);
@@ -189,7 +184,7 @@ int main() {
 
    for (int i = 0; i < dimension; i++) {
       for (int j = 0; j < dimension; j++) {
-         cout <<'\t'<< getA(i, j)<< setfill(' ');
+         cout << '\t' << getA(i, j) << setfill(' ');
       }
       cout << '\n';
    }
@@ -202,12 +197,13 @@ int main() {
       for (int j = 0; j <= i; j++) {
          if (i == j) {
             cout << setw(13) << setfill(' ') << '1';
-            for (int k = 0; k < dimension - i-1; k++) { cout << setw(13) << setfill(' ') << '0'; }
-         }else {
+            for (int k = 0; k < dimension - i - 1; k++) { cout << setw(13) << setfill(' ') << '0'; }
+         }
+         else {
             cout << setw(13) << getA(i, j) << setfill(' ');
          }
       }
-      cout << "\n" ;
+      cout << "\n";
    }
 
    cout << "\n\nU matrix be like\n";
@@ -217,11 +213,26 @@ int main() {
             cout << setw(13) << setfill(' ') << '0';
          }
          else {
-            cout<< setw(13) << getA(i, j) << setfill(' ');
+            cout << setw(13) << getA(i, j) << setfill(' ');
          }
       }
       cout << "\n";
    }
+
+   cout << "\n\nU:\n\n";
+   for(int j = 0; j < dimension; j++) {
+      for (int i = 0; i < dimension; i++) {
+         if (j < i) {
+            cout << "0\n";
+         }
+         else {
+         cout << getA(i, j) << '\n';
+         }
+      }
+      cout << "\n\n\n";
+   }
+
+
 
    calculateY(f, y);
 
